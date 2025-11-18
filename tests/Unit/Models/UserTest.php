@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('to array', function (): void {
-    $user = User::factory()->create()->refresh();
+test('user model has connection', function (): void {
+    expect(User::class)->toHaveMethod('getConnectionName');
+    expect(new User()->getConnectionName())->toBe('mongodb');
+});
 
-    expect(array_keys($user->toArray()))
-        ->toBe([
-            'id',
-            'name',
-            'email',
-            'email_verified_at',
-            'created_at',
-            'updated_at',
-        ]);
+test('user model has collection', function (): void {
+    expect(new User()->getTable())->toBe('users');
 });

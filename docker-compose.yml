@@ -1,0 +1,80 @@
+services:
+  nginx:
+    image: nginx:1.29.3-alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ./:/var/www
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - php
+    networks:
+      - kit-network
+
+  php:
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    container_name: php
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:delegated
+      - ./.docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./.docker/php/php.ini:/usr/local/etc/php/conf.d/app.ini:ro
+      - php_logs:/var/log/php
+    environment:
+      - DB_CONNECTION=mongodb
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_DATABASE=database
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - kit-network
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: devportal
+    ports:
+      - "${MONGODB_PORT}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - kit-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.2-alpine
+    container_name: edis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT_EXPOSE}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - kit-network
+
+
+volumes:
+  mongodb_data:
+  php_logs:
+  nginx_logs:
+  redis_data:
+
+networks:
+  kit-network:
+    driver: bridge
