@@ -91,10 +91,12 @@ RUN npm ci
 # Set environment variables for cache directories
 ENV npm_config_cache=/var/cache/.npm \
     PLAYWRIGHT_BROWSERS_PATH=/var/cache/.playwright \
-    COMPOSER_CACHE_DIR=/var/cache/.composer-cache
+    COMPOSER_CACHE_DIR=/var/cache/.composer-cache \
+    COMPOSER_HOME=/var/cache/.composer-home \
+    HOME=/var/cache/.home
 
 # Create cache directories and set permissions
-RUN mkdir -p /var/cache/.npm /var/cache/.npm-cache /var/cache/.playwright /var/cache/.composer-cache && \
+RUN mkdir -p /var/cache/.npm /var/cache/.npm-cache /var/cache/.playwright /var/cache/.composer-cache /var/cache/.composer-home /var/cache/.home && \
     chown -R www-data:www-data /var/cache
 
 # Install Playwright browsers and system dependencies as root
