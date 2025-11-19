@@ -2,11 +2,13 @@
 
 This is a modified version of [Nuno Maduro's Laravel Starter Kit](https://github.com/nunomaduro/laravel-starter-kit) configured to run with Docker Compose and MongoDB.
 
-> **Original Starter Kit**: For the official Laravel Starter Kit with all documentation and features, please visit **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
+> For the official Laravel Starter Kit with all documentation and features, please visit **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
 
 ## About This Version
 
 This repository adapts the ultra-strict, type-safe Laravel Starter Kit to work seamlessly with Docker Compose and MongoDB. It maintains all the rigorous code quality standards of the original while providing a containerized development environment.
+
+**Plug and Play**: This setup is designed for quick, hassle-free development. Just run `docker compose up` and start coding - no manual configuration needed. The entire stack (dependencies, migrations, assets) is automatically set up on every startup.
 
 ### Key Modifications
 
