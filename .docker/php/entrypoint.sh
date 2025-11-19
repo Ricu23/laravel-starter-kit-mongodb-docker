@@ -13,6 +13,12 @@ if [ ! -f .env ]; then
     # Generate application key only on first setup
     echo "Generating application key..."
     php artisan key:generate
+else
+    # Check if APP_KEY is set
+    if ! grep -q "^APP_KEY=.\+$" .env; then
+        echo "APP_KEY is not set. Generating application key..."
+        php artisan key:generate
+    fi
 fi
 
 # Run migrations

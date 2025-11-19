@@ -23,3 +23,7 @@ yarn-error.log
 /.vscode
 /.zed
 /tmp
+/tests/Browser/Screenshots
+/.cache
+/.pki
+/.local

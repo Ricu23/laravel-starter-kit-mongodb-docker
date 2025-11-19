@@ -88,8 +88,17 @@ RUN composer install --optimize-autoloader --no-dev --no-scripts
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Install Playwright browsers and install remaining dependencies
-RUN npx playwright install && npx playwright install-deps
+# Set environment variables for cache directories
+ENV npm_config_cache=/var/cache/.npm \
+    PLAYWRIGHT_BROWSERS_PATH=/var/cache/.playwright \
+    COMPOSER_CACHE_DIR=/var/cache/.composer-cache
+
+# Create cache directories and set permissions
+RUN mkdir -p /var/cache/.npm /var/cache/.npm-cache /var/cache/.playwright /var/cache/.composer-cache && \
+    chown -R www-data:www-data /var/cache
+
+# Install Playwright browsers and system dependencies as root
+RUN npx playwright install --with-deps
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www
