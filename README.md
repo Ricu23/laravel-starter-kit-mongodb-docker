@@ -100,3 +100,4 @@ You can customize the following ports in your `.env` file:
 ## License
 
 This project maintains the **[MIT license](https://opensource.org/licenses/MIT)** from the original Laravel Starter Kit.
+
