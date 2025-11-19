@@ -1,96 +1,98 @@
-- Blade (this project) version: **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
-- Inertia & React version: **[github.com/nunomaduro/laravel-starter-kit-inertia-react](https://github.com/nunomaduro/laravel-starter-kit-inertia-react)**
+# Laravel Starter Kit - MongoDB Docker
 
+This is a modified version of [Nuno Maduro's Laravel Starter Kit](https://github.com/nunomaduro/laravel-starter-kit) configured to run with Docker Compose and MongoDB.
 
-<p align="center">
-    <a href="https://youtu.be/VhzP0XWGTC4" target="_blank">
-        <img src="/art/banner.png" alt="Overview Laravel Starter Kit" style="width:70%;">
-    </a>
-</p>
+> **Original Starter Kit**: For the official Laravel Starter Kit with all documentation and features, please visit **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
 
-<p>
-    <a href="https://github.com/nunomaduro/laravel-starter-kit/actions"><img src="https://github.com/nunomaduro/laravel-starter-kit/actions/workflows/tests.yml/badge.svg" alt="Build Status"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/dt/nunomaduro/laravel-starter-kit" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/v/nunomaduro/laravel-starter-kit" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit"><img src="https://img.shields.io/packagist/l/nunomaduro/laravel-starter-kit" alt="License"></a>
-</p>
+## About This Version
 
-**Laravel Starter Kit** is an ultra-strict, type-safe [Laravel](https://laravel.com) skeleton engineered for developers who refuse to compromise on code quality. This opinionated starter kit enforces rigorous development standards through meticulous tooling configuration and architectural decisions that prioritize type safety, immutability, and fail-fast principles.
+This repository adapts the ultra-strict, type-safe Laravel Starter Kit to work seamlessly with Docker Compose and MongoDB. It maintains all the rigorous code quality standards of the original while providing a containerized development environment.
 
-## Why This Starter Kit?
+### Key Modifications
 
-Modern PHP has evolved into a mature, type-safe language, yet many Laravel projects still operate with loose conventions and optional typing. This starter kit changes that paradigm by enforcing:
+- **Docker Compose Setup**: Fully containerized environment with Nginx, PHP-FPM, MongoDB, and Redis
+- **MongoDB Integration**: Configured with MongoDB Laravel driver instead of traditional SQL databases
+- **Optimized Dockerfile**: PHP 8.4 with all necessary extensions, Composer, Node.js 24, and Playwright support
 
-- **100% Type Coverage**: Every method, property, and parameter is explicitly typed
-- **Zero Tolerance for Code Smells**: Rector and PHPStan at maximum strictness catch issues before they become bugs
-- **Immutable-First Architecture**: Data structures favor immutability to prevent unexpected mutations
-- **Fail-Fast Philosophy**: Errors are caught at compile-time, not runtime
-- **Automated Code Quality**: Pre-configured tools ensure consistent, pristine code across your entire team
-- **Just Better Laravel Defaults**: Thanks to **[Essentials](https://github.com/nunomaduro/essentials)** / strict models, auto eager loading, immutable dates, and more...
+### Docker Stack
 
-This isn't just another Laravel boilerplate—it's a statement that PHP applications can and should be built with the same rigor as strongly-typed languages like Rust or TypeScript.
+This project uses the following Docker images:
+
+- **PHP**: `php:8.4-fpm-bookworm` (custom built with extensions)
+- **Nginx**: `nginx:1.29.3-alpine`
+- **MongoDB**: `mongo:8.0`
+- **Redis**: `redis:8.2-alpine`
+- **Node.js**: `24.x` (installed in PHP container)
 
 ## Getting Started
 
-> **Requires [PHP 8.4+](https://php.net/releases/)**.
+### Prerequisites
 
-Create your type-safe Laravel application using [Composer](https://getcomposer.org):
+- Docker and Docker Compose installed on your system
+- Git
 
+### Setup
+
+1. Clone this repository:
 ```bash
-composer create-project nunomaduro/laravel-starter-kit --prefer-dist example-app
+git clone https://github.com/ricu23/laravel-starter-kit-mongodb-docker.git
+cd laravel-starter-kit-mongodb-docker
 ```
 
-### Initial Setup
-
-Navigate to your project and complete the setup:
-
+2. Start the Docker containers:
 ```bash
-cd example-app
-
-# Setup project
-composer setup
-
-# Start the development server
-composer dev
+docker compose up -d --build
 ```
 
-### Optional: Browser Testing Setup
+That's it! The application is now running at `http://localhost:8080`
 
-If you plan to use Pest's browser testing capabilities:
+### What Happens on Startup
 
+Every time you run `docker compose up`, the entrypoint script automatically executes the following tasks:
+
+- **Installs Composer dependencies** - Ensures all PHP packages are up to date
+- **Sets up environment** - Copies `.env.example` to `.env` if it doesn't exist
+- **Generates application key** - Creates `APP_KEY` if not already set
+- **Runs database migrations** - Automatically migrates your database schema
+- **Installs npm dependencies** - Ensures all frontend packages are available
+- **Builds frontend assets** - Compiles CSS/JS using Vite
+
+This means your application is always in sync with the latest dependencies and migrations on every startup.
+
+### Running Tests
+
+You can run the test suite in two ways:
+
+**From outside the container:**
 ```bash
-npm install playwright
-npx playwright install
+docker compose exec php composer test
 ```
 
-### Verify Installation
-
-Run the test suite to ensure everything is configured correctly:
-
+**From inside the container:**
 ```bash
 composer test
 ```
 
-You should see 100% test coverage and all quality checks passing.
+## Available Services
 
-## Available Tooling
+- **Web Application**: http://localhost:8080
+- **MongoDB**: localhost:27017
+- **Redis**: localhost:6379
 
-### Development
-- `composer dev` - Starts Laravel server, queue worker, log monitoring, and Vite dev server concurrently
+## Environment Variables
 
-### Code Quality
-- `composer lint` - Runs Rector (refactoring), Pint (PHP formatting), and Prettier (JS/TS formatting)
-- `composer test:lint` - Dry-run mode for CI/CD pipelines
+You can customize the following ports in your `.env` file:
 
-### Testing
-- `composer test:type-coverage` - Ensures 100% type coverage with Pest
-- `composer test:types` - Runs PHPStan at level 9 (maximum strictness)
-- `composer test:unit` - Runs Pest tests with 100% code coverage requirement
-- `composer test` - Runs the complete test suite (type coverage, unit tests, linting, static analysis)
+- `NGINX_PORT` - Nginx port (default: 8080)
+- `MONGODB_PORT` - MongoDB port (default: 27017)
+- `REDIS_PORT_EXPOSE` - Redis port (default: 6379)
 
-### Maintenance
-- `composer update:requirements` - Updates all PHP and NPM dependencies to latest versions
+## Credits
+
+- Original starter kit by **[Nuno Maduro](https://x.com/enunomaduro)**
+- Docker and MongoDB modifications by **[Ricu23](https://ricu.dev/)**
+- Docker configuration assistance by **Claude Sonnet 4.5**
 
 ## License
 
-**Laravel Starter Kit** was created by **[Nuno Maduro](https://x.com/enunomaduro)** under the **[MIT license](https://opensource.org/licenses/MIT)**.
+This project maintains the **[MIT license](https://opensource.org/licenses/MIT)** from the original Laravel Starter Kit.
