@@ -91,6 +91,30 @@ You can customize the following ports in your `.env` file:
 - `MONGODB_PORT` - MongoDB port (default: 27017)
 - `REDIS_PORT_EXPOSE` - Redis port (default: 6379)
 
+## GitHub Workflow
+
+The GitHub Actions workflow currently runs on **all branches** and takes approximately **3 minutes** to complete for the skeleton template. Consider editing `.github/workflows/tests.yml` to:
+
+- Disable the workflow if not needed for your project
+- Enable it only on specific branches (e.g., `main`, `develop`) to reduce CI/CD minutes usage
+
+Example to run only on specific branches:
+```yaml
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+```
+
+## Roadmap
+
+- [ ] Create and publish pre-built Docker image for the PHP container to Docker Hub
+- [ ] Reduce startup time by using pre-built image instead of building from Dockerfile
+
 ## Credits
 
 - Original starter kit by **[Nuno Maduro](https://x.com/enunomaduro)**
