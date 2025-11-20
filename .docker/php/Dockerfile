@@ -102,12 +102,6 @@ RUN mkdir -p /var/cache/.npm /var/cache/.npm-cache /var/cache/.playwright /var/c
 # Install Playwright browsers and system dependencies as root
 RUN npx playwright install --with-deps
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www
-
-# Switch to www-data user
-USER www-data
-
 # Expose port
 EXPOSE 9000
 
