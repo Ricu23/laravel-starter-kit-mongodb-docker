@@ -87,9 +87,9 @@ composer test
 
 You can customize the following ports in your `.env` file:
 
-- `NGINX_PORT` - Nginx port (default: 8080)
-- `MONGODB_PORT` - MongoDB port (default: 27017)
-- `REDIS_PORT_EXPOSE` - Redis port (default: 6379)
+- `NGINX_PORT` - Exposed Nginx port (default: 8080)
+- `MONGODB_PORT` - Exposed MongoDB port (default: 27017)
+- `REDIS_PORT_EXPOSE` - Exposed Redis port (default: 6379)
 
 ## GitHub Workflow
 
