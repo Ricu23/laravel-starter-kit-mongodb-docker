@@ -44,7 +44,7 @@ services:
     container_name: mongodb
     restart: unless-stopped
     environment:
-      MONGO_INITDB_DATABASE: devportal
+      MONGO_INITDB_DATABASE: database
     ports:
       - "${MONGODB_PORT:-27017}:27017"
     volumes:
