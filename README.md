@@ -118,7 +118,7 @@ on:
 ## Credits
 
 - Original starter kit by **[Nuno Maduro](https://x.com/enunomaduro)**
-- Docker and MongoDB modifications by **[Ricu23](https://ricu.dev/)**
+- Docker and MongoDB modifications by **[Rares Hideg](https://ricu.dev/)**
 - Docker configuration assistance by **Claude Sonnet 4.5**
 
 ## License
