@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && groupmod -g ${GID} www-data \
     && usermod -u ${UID} -g ${GID} www-data
 
+# Configure git to allow /var/www as a safe directory
+RUN git config --system --add safe.directory /var/www
+
 # Install Node.js 24 from NodeSource repository
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt-get install -y --no-install-recommends nodejs

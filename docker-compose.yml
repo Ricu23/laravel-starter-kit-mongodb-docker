@@ -26,6 +26,7 @@ services:
       - ./.docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
       - ./.docker/php/php.ini:/usr/local/etc/php/conf.d/app.ini:ro
       - php_logs:/var/log/php
+      - /var/www/.docker-data
     environment:
       - DB_CONNECTION=mongodb
       - DB_HOST=mongodb
