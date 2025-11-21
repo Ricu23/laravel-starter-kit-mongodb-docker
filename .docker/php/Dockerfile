@@ -3,7 +3,11 @@ FROM php:8.4-fpm-bookworm
 # Set working directory
 WORKDIR /var/www
 
-# Update package manager
+# Define build arguments for UID/GID
+ARG UID=1000
+ARG GID=1000
+
+# Update package manager and modify www-data user
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
@@ -12,7 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libfreetype6 \
     libjpeg62-turbo \
-    libzip4
+    libzip4 \
+    && groupmod -g ${GID} www-data \
+    && usermod -u ${UID} -g ${GID} www-data
 
 # Install Node.js 24 from NodeSource repository
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
@@ -71,23 +77,6 @@ RUN apt-get install -y --no-install-recommends \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy entrypoint script
-COPY .docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Copy PHP configuration
-COPY .docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
-
-# Copy only composer files for dependency installation
-COPY composer.json composer.lock* ./
-
-# Install PHP dependencies without scripts
-RUN composer install --optimize-autoloader --no-dev --no-scripts
-
-# Copy package files and install npm dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci
-
 # Set environment variables for cache directories
 ENV npm_config_cache=/var/cache/.npm \
     PLAYWRIGHT_BROWSERS_PATH=/var/cache/.playwright \
@@ -97,10 +86,35 @@ ENV npm_config_cache=/var/cache/.npm \
 
 # Create cache directories and set permissions
 RUN mkdir -p /var/cache/.npm /var/cache/.npm-cache /var/cache/.playwright /var/cache/.composer-cache /var/cache/.composer-home /var/cache/.home && \
-    chown -R www-data:www-data /var/cache
+    chown -R www-data:www-data /var/cache /var/www
 
-# Install Playwright browsers and system dependencies as root
-RUN npx playwright install --with-deps
+# Copy entrypoint script
+COPY --chown=www-data:www-data .docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Copy PHP configuration
+COPY .docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
+
+# Switch to www-data user
+USER www-data
+
+# Copy only composer files for dependency installation
+COPY --chown=www-data:www-data composer.json composer.lock* ./
+
+# Install PHP dependencies without scripts
+RUN composer install --optimize-autoloader --no-dev --no-scripts
+
+# Copy package files and install npm dependencies
+COPY --chown=www-data:www-data package.json package-lock.json* ./
+RUN npm ci
+
+# Switch to root to install system dependencies for Playwright
+USER root
+RUN npx playwright install-deps
+
+# Switch back to www-data to install browsers
+USER www-data
+RUN npx playwright install
 
 # Expose port
 EXPOSE 9000
